@@ -10,10 +10,10 @@ st.set_page_config(
 )
 
 st.title("⚛️ Bio-Core Formalism: Advanced Molecular Synthesis")
-st.subheader("Engine Perancangan Bahan Aktif Berbasis Viskositas & Properti Kimiawi")
+st.subheader("Engine Perancangan Bahan Aktif & Modul Formulasi Fisik Pelarut")
 
 # Banner Info
-st.info("💡 **R&D System:** Mesin generator molekul tingkat lanjut dengan parameter kimiawi dan pengaturan ambang batas validasi dinamis.")
+st.info("💡 **R&D System:** Dilengkapi dengan modul kalkulasi bahan pembawa fisik (*Carrier/Solvent*) untuk panduan formulasi laboratorium.")
 
 st.markdown("---")
 
@@ -21,43 +21,48 @@ st.markdown("---")
 if "arsip_molekul" not in st.session_state:
     st.session_state.arsip_molekul = []
 
-# Panel Kontrol Parameter Utama & Ambang Batas Validasi
+# Panel Kontrol Parameter Utama & Ambang Batas
 st.markdown("### 🎛️ Parameter Sintesis, Properti Kimiawi & Ambang Batas")
 
 col1, col2 = st.columns(2)
 with col1:
-    nama_molekul_baru = st.text_input("Nama Kandidat Molekul Baru:", value="Bio-Core Advanced Compound X-3")
+    nama_molekul_baru = st.text_input("Nama Kandidat Molekul Baru:", value="Bio-Core X-3")
     kategori_target = st.selectbox(
         "Target Spesifik Biologis Hama:",
         ["Insektisida (Sistemik Saraf)", "Fungisida (Inhibitor Dinding Sel)", "Herbisida (Blokir Enzim EPSPS)", "Bakterisida (Peptida Rekayasa)"]
     )
 with col2:
     konstanta_zk = st.number_input("Konstanta Bio-Core ($Z_k$):", min_value=0.001, value=1.618033, step=0.000001, format="%.6f")
-    tingkat_kerapatan = st.slider("Indeks Viskositas Informasi Ruang:", min_value=1.0, max_value=10.0, value=6.283, step=0.01)
+    tingkat_kerapatan = st.slider("Indeks Viskositas Informasi Ruang:", min_value=1.0, max_value=10.0, value=9.30, step=0.01)
 
 col3, col4, col5 = st.columns(3)
 with col3:
     fasa_a_info = st.number_input("Fasa Geometri Utama (A)", min_value=0.1, value=2.718, step=0.001, format="%.3f")
 with col4:
-    fasa_b_info = st.number_input("Fasa Viskositas Dasar (B)", min_value=0.1, value=1.000, step=0.001, format="%.3f")
+    fasa_b_info = st.number_input("Fasa Viskositas Dasar (B)", min_value=0.1, value=0.900, step=0.001, format="%.3f")
 with col5:
     skala_sintesis = st.number_input("Target Simulasi Massa (Gram)", min_value=10.0, value=500.0, step=50.0)
 
-# Pengaturan Ambang Batas Validasi Baru
+# Modul Pilihan Tipe Formulasi Fisik Pelarut
 st.markdown("---")
+st.markdown("### 🧪 Modul Formulasi Fisik & Pelarut (*Carrier/Solvent*)")
+tipe_formulasi = st.selectbox(
+    "Pilih Tipe Sediaan Formulasi Laboratorium:",
+    ["Emulsifiable Concentrate (EC - Cairan Pekat Pelarut)", "Wettable Powder (WP - Serbuk Basah)", "Suspension Concentrate (SC - Pekatan Suspensi)"]
+)
+
 ambang_batas_validasi = st.slider(
     "🎯 Ambang Batas Kestabilan Lock-Binding (Minimum Threshold):", 
     min_value=10.0, 
     max_value=50.0, 
-    value=25.0, 
-    step=0.5,
-    help="Menentukan batas minimal koefisien ikatan agar molekul dinyatakan VALID & STABIL."
+    value=24.5, 
+    step=0.5
 )
 
 st.markdown("")
 
 # Tombol Eksekusi Generator Molekul Baru
-if st.button("🚀 Eksekusi Sintesis Kimiawi & Evaluasi Ambang Batas", use_container_width=True):
+if st.button("🚀 Eksekusi Sintesis, Evaluasi & Kalkulasi Formulasi Fisik", use_container_width=True):
     
     # Perhitungan Matematika Berbasis Bio-Core Formalism & Kimiawi
     rasio_kinetik = fasa_a_info / fasa_b_info
@@ -65,11 +70,28 @@ if st.button("🚀 Eksekusi Sintesis Kimiawi & Evaluasi Ambang Batas", use_conta
     titik_leleh_termal_prediksi = 125.4 + (indeks_potensi_molekul * 14.2)
     koefisien_ikatan_lock = (konstanta_zk ** 2) * (tingkat_kerapatan / fasa_b_info)
     
-    # Parameter Kimiawi Tambahan (Advanced Chemical Metrics)
+    # Parameter Kimiawi Tambahan
     prediksi_mw = round(150.0 + (fasa_a_info * 45.2) + (tingkat_kerapatan * 12.5), 2)
     prediksi_log_p = round(1.2 + (konstanta_zk * 1.5) - (fasa_b_info * 0.4), 2)
     estimasi_polar_surface_area = round(45.5 + (tingkat_kerapatan * 8.1), 2)
     
+    # Kalkulasi Proporsi Bahan Fisik Berdasarkan Tipe Formulasi & Massa Total
+    if "EC" in tipe_formulasi:
+        massa_bahan_aktif = round(skala_sintesis * 0.20, 2)  # 20% Konsentrat Aktif
+        massa_pelarut_utama = round(skala_sintesis * 0.65, 2) # 65% Pelarut Organik (Xylene/Aromatic Solvent)
+        massa_surfaktan = round(skala_sintesis * 0.15, 2)     # 15% Emulsifier (Tween/Alkyl Aryl Polyglycol Ether)
+        detail_pembawa = f"- Pelarut Utama: Aromatic Solvent ({massa_pelarut_utama} g)\n- Surfaktan/Emulsifier: Emulsifier Blend ({massa_surfaktan} g)"
+    elif "WP" in tipe_formulasi:
+        massa_bahan_aktif = round(skala_sintesis * 0.25, 2)  # 25% Konsentrat Aktif
+        massa_pelarut_utama = round(skala_sintesis * 0.65, 2) # 65% Carrier Padat (Kaolin / Talkum)
+        massa_surfaktan = round(skala_sintesis * 0.10, 2)     # 10% Wetting Agent (Sodium Lignosulfonate)
+        detail_pembawa = f"- Carrier Padat: Kaolin/Talkum Halus ({massa_pelarut_utama} g)\n- Wetting Agent: Lignosulfonate ({massa_surfaktan} g)"
+    else:
+        massa_bahan_aktif = round(skala_sintesis * 0.30, 2)  # 30% Konsentrat Aktif
+        massa_pelarut_utama = round(skala_sintesis * 0.55, 2) # 55% Carrier Cair (Air Demin / Propilen Glikol)
+        massa_surfaktan = round(skala_sintesis * 0.15, 2)     # 15% Dispersing & Stabilizing Agent
+        detail_pembawa = f"- Carrier Cair: Demineralized Water ({massa_pelarut_utama} g)\n- Dispersing Agent: Polimerik ({massa_surfaktan} g)"
+
     # Validasi Berdasarkan Ambang Batas Dinamis
     status_molekul = "VALID & STABIL (Informasi Terkunci Sempurna)" if koefisien_ikatan_lock >= ambang_batas_validasi else "KRITIS (Perlu Penyesuaian Viskositas)"
 
@@ -78,17 +100,14 @@ if st.button("🚀 Eksekusi Sintesis Kimiawi & Evaluasi Ambang Batas", use_conta
     data_molekul_baru = {
         "Waktu": waktu_eksekusi,
         "Nama Molekul": nama_molekul_baru,
-        "Target": kategori_target.split()[0],
-        "MW (g/mol)": prediksi_mw,
-        "LogP": prediksi_log_p,
+        "Formulasi": tipe_formulasi.split()[0],
         "Lock-Binding": round(koefisien_ikatan_lock, 3),
-        "Batas Min": ambang_batas_validasi,
         "Status": status_molekul
     }
     st.session_state.arsip_molekul.insert(0, data_molekul_baru)
 
     st.markdown("---")
-    st.subheader("🧬 Hasil Prediksi Karakteristik Fisik-Kimia")
+    st.subheader("🧬 Hasil Prediksi & Komposisi Formulasi Fisik")
 
     if "VALID" in status_molekul:
         st.success(f"STATUS SINTESIS: {status_molekul}")
@@ -101,54 +120,48 @@ if st.button("🚀 Eksekusi Sintesis Kimiawi & Evaluasi Ambang Batas", use_conta
         f"* **Prediksi Bobot Molekul (MW):** `{prediksi_mw} g/mol`\n"
         f"* **Koefisien Partisi (Prediksi LogP):** `{prediksi_log_p}`\n"
         f"* **Luas Permukaan Polar (PSA):** `{estimasi_polar_surface_area} Å²`\n"
-        f"* **Indeks Potensi Biologis:** `{indeks_potensi_molekul:.3f} Units`\n"
-        f"* **Prediksi Titik Leleh / Ketahanan Termal:** `{titik_leleh_termal_prediksi:.2f} °C`\n"
         f"* **Koefisien Kunci Molekuler (*Lock-Binding*):** `{koefisien_ikatan_lock:.3f}` *(Batas Min: {ambang_batas_validasi})*"
     )
 
-    st.markdown("### 🧪 Deskripsi Geometri & Mekanisme Kerja Bio-Core:")
-    st.markdown(f"1. Molekul dirancang melalui terjemahan **Konstanta Bio-Core ($Z_k = {konstanta_zk}$)** yang diselaraskan dengan reseptor pada kategori **{kategori_target}**.")
-    st.markdown(f"2. Nilai LogP sebesar `{prediksi_log_p}` menunjukkan kemampuan penetrasi optimal melalui lapisan lilin (kutikula) daun atau membran sel hama.")
-    st.markdown(f"3. Evaluasi ambang batas validasi diatur pada tingkat ketatan **{ambang_batas_validasi} units**.")
+    st.markdown("### ⚖️ Rincian Penimbangan Bahan Formulasi Lab (Skala Total: " + str(skala_sintesis) + " Gram):")
+    st.markdown(
+        f"* **Bahan Aktif ({nama_molekul_baru}):** `{massa_bahan_aktif} gram`\n"
+        f"{detail_pembawa}"
+    )
 
     # Fitur Unduh Dokumen Paten / Blueprint Molekul Baru
     st.markdown("---")
-    st.subheader("📥 Unduh Blueprint Sintesis Molekul Baru")
+    st.subheader("📥 Unduh Blueprint & Resep Formulasi Lab")
     
     blueprint_konten = f"""==================================================
-        BLUEPRINT SINTESIS MOLEKUL BARU (R&D)
+        BLUEPRINT & RESEP FORMULASI LABORATORIUM
         BIO-CORE FORMALISM - ADVANCED CHEMICAL ENGINE
 ==================================================
 Tanggal & Waktu Laporan : {waktu_eksekusi}
 Nama Kandidat Molekul   : {nama_molekul_baru}
 Kategori Target Hama    : {kategori_target}
+Tipe Sediaan Formulasi  : {tipe_formulasi}
+Target Massa Total      : {skala_sintesis} Gram
 --------------------------------------------------
-PARAMETER KONSTANTA & STRUKTUR:
+PARAMETER STRUKTUR:
 - Konstanta Utama (Z_k) : {konstanta_zk}
-- Fasa Utama (A)        : {fasa_a_info}
-- Fasa Dasar (B)        : {fasa_b_info}
 - Viskositas Informasi  : {tingkat_kerapatan}
---------------------------------------------------
-PROPERTI KIMIAWI TERPROYEKSI:
-- Bobot Molekul (MW)    : {prediksi_mw} g/mol
-- Koefisien Partisi LogP: {prediksi_log_p}
-- Polar Surface Area    : {estimasi_polar_surface_area} Å²
-- Indeks Potensi Biologis: {indeks_potensi_molekul:.3f} Units
-- Ketahanan Suhu (Suhu) : {titik_leleh_termal_prediksi:.2f} °C
 - Koefisien Ikatan Lock : {koefisien_ikatan_lock:.3f}
-- Ambang Batas Validasi : {ambang_batas_validasi}
 - Status Validasi       : {status_molekul}
-- Target Massa Simulasi : {skala_sintesis} Gram
+--------------------------------------------------
+RINCIAN KOMPOSISI PENIMBANGAN FISIK:
+1. Bahan Aktif          : {massa_bahan_aktif} gram
+{detail_pembawa}
 ==================================================
 CATATAN KEKAYAAN INTELEKTUAL:
-Dokumen blueprint molekul ini diturunkan secara eksklusif
-berdasarkan kaidah Bio-Core Formalism Architecture.
+Dokumen resep formulasi fisik ini diturunkan secara 
+eksklusif berdasarkan kaidah Bio-Core Formalism Architecture.
 ================================================== """
 
     st.download_button(
-        label="📄 Unduh Blueprint Molekul (.txt)",
+        label="📄 Unduh Blueprint & Resep Lab (.txt)",
         data=blueprint_konten,
-        file_name=f"Blueprint_Advanced_{nama_molekul_baru.replace(' ', '_')}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+        file_name=f"Resep_Formulasi_{nama_molekul_baru.replace(' ', '_')}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
         mime="text/plain",
         use_container_width=True
     )
