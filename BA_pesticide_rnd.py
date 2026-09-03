@@ -88,7 +88,7 @@ if st.button("🚀 Eksekusi Sintesis Molekul & Kalkulasi Struktur Bio", use_cont
 
     st.markdown("### 🧪 Deskripsi Geometri & Mekanisme Kerja Bio-Core:")
     st.markdown(f"1. Molekul ini dirancang bukan dari struktur kimia acak, melainkan hasil terjemahan **Konstanta Bio-Core ($Z_k = {konstanta_zk}$)** yang diselaraskan dengan frekuensi reseptor hama pada kategori **{kategori_target}**.")
-    st.markdown(2. f"Struktur ikatan memiliki ketahanan mutlak terhadap degradasi foton karena terlindungi oleh indeks viskositas informasi ruang sebesar **{tingkat_kerapatan}**.")
+    st.markdown(f"2. Struktur ikatan memiliki ketahanan mutlak terhadap degradasi foton karena terlindungi oleh indeks viskositas informasi ruang sebesar **{tingkat_kerapatan}**.")
     st.markdown("3. Molekul siap dievaluasi lebih lanjut untuk tahap formulasi fisik di laboratorium.")
 
     # Fitur Unduh Dokumen Paten / Blueprint Molekul Baru
