@@ -13,7 +13,7 @@ st.title("⚛️ Bio-Core Formalism: Advanced Molecular Synthesis")
 st.subheader("Engine Perancangan Bahan Aktif Berbasis Viskositas & Properti Kimiawi")
 
 # Banner Info
-st.info("💡 **R&D System:** Mesin generator molekul tingkat lanjut dengan tambahan parameter kimiawi (MW, LogP, dan Kepatuhan Struktur) untuk bahan aktif pestisida masa depan.")
+st.info("💡 **R&D System:** Mesin generator molekul tingkat lanjut dengan parameter kimiawi dan pengaturan ambang batas validasi dinamis.")
 
 st.markdown("---")
 
@@ -21,12 +21,12 @@ st.markdown("---")
 if "arsip_molekul" not in st.session_state:
     st.session_state.arsip_molekul = []
 
-# Panel Kontrol Parameter Utama
-st.markdown("### 🎛️ Parameter Sintesis & Properti Kimiawi")
+# Panel Kontrol Parameter Utama & Ambang Batas Validasi
+st.markdown("### 🎛️ Parameter Sintesis, Properti Kimiawi & Ambang Batas")
 
 col1, col2 = st.columns(2)
 with col1:
-    nama_molekul_baru = st.text_input("Nama Kandidat Molekul Baru:", value="Bio-Core Advanced Compound X-2")
+    nama_molekul_baru = st.text_input("Nama Kandidat Molekul Baru:", value="Bio-Core Advanced Compound X-3")
     kategori_target = st.selectbox(
         "Target Spesifik Biologis Hama:",
         ["Insektisida (Sistemik Saraf)", "Fungisida (Inhibitor Dinding Sel)", "Herbisida (Blokir Enzim EPSPS)", "Bakterisida (Peptida Rekayasa)"]
@@ -43,10 +43,21 @@ with col4:
 with col5:
     skala_sintesis = st.number_input("Target Simulasi Massa (Gram)", min_value=10.0, value=500.0, step=50.0)
 
+# Pengaturan Ambang Batas Validasi Baru
+st.markdown("---")
+ambang_batas_validasi = st.slider(
+    "🎯 Ambang Batas Kestabilan Lock-Binding (Minimum Threshold):", 
+    min_value=10.0, 
+    max_value=50.0, 
+    value=25.0, 
+    step=0.5,
+    help="Menentukan batas minimal koefisien ikatan agar molekul dinyatakan VALID & STABIL."
+)
+
 st.markdown("")
 
 # Tombol Eksekusi Generator Molekul Baru
-if st.button("🚀 Eksekusi Sintesis Kimiawi & Kalkulasi Struktur", use_container_width=True):
+if st.button("🚀 Eksekusi Sintesis Kimiawi & Evaluasi Ambang Batas", use_container_width=True):
     
     # Perhitungan Matematika Berbasis Bio-Core Formalism & Kimiawi
     rasio_kinetik = fasa_a_info / fasa_b_info
@@ -59,8 +70,8 @@ if st.button("🚀 Eksekusi Sintesis Kimiawi & Kalkulasi Struktur", use_containe
     prediksi_log_p = round(1.2 + (konstanta_zk * 1.5) - (fasa_b_info * 0.4), 2)
     estimasi_polar_surface_area = round(45.5 + (tingkat_kerapatan * 8.1), 2)
     
-    # Validasi Kestabilan Informasi & Kelayakan Obat/Pestisida (Lipinski-like check)
-    status_molekul = "VALID & STABIL (Informasi Terkunci Sempurna)" if koefisien_ikatan_lock >= 25.0 else "KRITIS (Perlu Penyesuaian Viskositas)"
+    # Validasi Berdasarkan Ambang Batas Dinamis
+    status_molekul = "VALID & STABIL (Informasi Terkunci Sempurna)" if koefisien_ikatan_lock >= ambang_batas_validasi else "KRITIS (Perlu Penyesuaian Viskositas)"
 
     # Simpan ke Session State Arsip
     waktu_eksekusi = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -70,7 +81,8 @@ if st.button("🚀 Eksekusi Sintesis Kimiawi & Kalkulasi Struktur", use_containe
         "Target": kategori_target.split()[0],
         "MW (g/mol)": prediksi_mw,
         "LogP": prediksi_log_p,
-        "Indeks Potensi": round(indeks_potensi_molekul, 3),
+        "Lock-Binding": round(koefisien_ikatan_lock, 3),
+        "Batas Min": ambang_batas_validasi,
         "Status": status_molekul
     }
     st.session_state.arsip_molekul.insert(0, data_molekul_baru)
@@ -91,13 +103,13 @@ if st.button("🚀 Eksekusi Sintesis Kimiawi & Kalkulasi Struktur", use_containe
         f"* **Luas Permukaan Polar (PSA):** `{estimasi_polar_surface_area} Å²`\n"
         f"* **Indeks Potensi Biologis:** `{indeks_potensi_molekul:.3f} Units`\n"
         f"* **Prediksi Titik Leleh / Ketahanan Termal:** `{titik_leleh_termal_prediksi:.2f} °C`\n"
-        f"* **Koefisien Kunci Molekuler (*Lock-Binding*):** `{koefisien_ikatan_lock:.3f}`"
+        f"* **Koefisien Kunci Molekuler (*Lock-Binding*):** `{koefisien_ikatan_lock:.3f}` *(Batas Min: {ambang_batas_validasi})*"
     )
 
     st.markdown("### 🧪 Deskripsi Geometri & Mekanisme Kerja Bio-Core:")
     st.markdown(f"1. Molekul dirancang melalui terjemahan **Konstanta Bio-Core ($Z_k = {konstanta_zk}$)** yang diselaraskan dengan reseptor pada kategori **{kategori_target}**.")
     st.markdown(f"2. Nilai LogP sebesar `{prediksi_log_p}` menunjukkan kemampuan penetrasi optimal melalui lapisan lilin (kutikula) daun atau membran sel hama.")
-    st.markdown("3. Struktur siap diformulasikan ke tahap uji laboratorium fisik.")
+    st.markdown(f"3. Evaluasi ambang batas validasi diatur pada tingkat ketatan **{ambang_batas_validasi} units**.")
 
     # Fitur Unduh Dokumen Paten / Blueprint Molekul Baru
     st.markdown("---")
@@ -124,6 +136,7 @@ PROPERTI KIMIAWI TERPROYEKSI:
 - Indeks Potensi Biologis: {indeks_potensi_molekul:.3f} Units
 - Ketahanan Suhu (Suhu) : {titik_leleh_termal_prediksi:.2f} °C
 - Koefisien Ikatan Lock : {koefisien_ikatan_lock:.3f}
+- Ambang Batas Validasi : {ambang_batas_validasi}
 - Status Validasi       : {status_molekul}
 - Target Massa Simulasi : {skala_sintesis} Gram
 ==================================================
