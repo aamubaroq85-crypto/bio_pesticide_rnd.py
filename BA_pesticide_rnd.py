@@ -13,7 +13,7 @@ st.title("⚛️ Bio-Core Formalism: Advanced Molecular Synthesis")
 st.subheader("Engine Perancangan Bahan Aktif & Modul Formulasi Fisik Pelarut")
 
 # Banner Info
-st.info("💡 **R&D System:** Dilengkapi dengan modul kalkulasi bahan pembawa fisik (*Carrier/Solvent*) untuk panduan formulasi laboratorium.")
+st.info("💡 **R&D System:** Menggunakan standar penamaan sintesis aktif (Contoh Insektisida: **Coremectin**).")
 
 st.markdown("---")
 
@@ -26,7 +26,7 @@ st.markdown("### 🎛️ Parameter Sintesis, Properti Kimiawi & Ambang Batas")
 
 col1, col2 = st.columns(2)
 with col1:
-    nama_molekul_baru = st.text_input("Nama Kandidat Molekul Baru:", value="Bio-Core X-3")
+    nama_molekul_baru = st.text_input("Nama Kandidat Molekul Baru:", value="Coremectin")
     kategori_target = st.selectbox(
         "Target Spesifik Biologis Hama:",
         ["Insektisida (Sistemik Saraf)", "Fungisida (Inhibitor Dinding Sel)", "Herbisida (Blokir Enzim EPSPS)", "Bakterisida (Peptida Rekayasa)"]
